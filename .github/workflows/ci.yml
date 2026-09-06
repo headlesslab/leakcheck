@@ -16,5 +16,5 @@ jobs:
   go:
     uses: headlesslab/.github/.github/workflows/go.yml@91b72ab0bea67e8d7357818e94326394d011bb02 # main
     with:
-      coverage-threshold: 91.7
+      coverage-threshold: 100
       godebug: tracebackancestors=1000
