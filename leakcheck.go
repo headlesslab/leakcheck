@@ -1,3 +1,5 @@
+// Package leakcheck monitors the runtime goroutine stack, to wait for
+// goroutines to exit or to detect leaks in tests.
 package leakcheck
 
 import (

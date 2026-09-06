@@ -77,7 +77,7 @@ func TestCheckLeak(t *testing.T) {
 	close(wait)
 }
 
-func TestCheckLeakAlreadyFailed(t *testing.T) {
+func TestCheckLeakAlreadyFailed(_ *testing.T) {
 	m := &mockT{failed: true}
 
 	wait := make(chan int)
@@ -111,7 +111,7 @@ func TestCheckMainLeak(t *testing.T) {
 		leakcheck.Exit = old
 		log.SetOutput(os.Stderr)
 	})
-	leakcheck.Exit = func(code int) {}
+	leakcheck.Exit = func(_ int) {}
 	buf := bytes.NewBuffer(nil)
 	log.SetOutput(buf)
 
@@ -135,7 +135,7 @@ func TestCheckMainLeakAlreadyFailed(t *testing.T) {
 		leakcheck.Exit = old
 		log.SetOutput(os.Stderr)
 	})
-	leakcheck.Exit = func(code int) {}
+	leakcheck.Exit = func(_ int) {}
 	buf := bytes.NewBuffer(nil)
 	log.SetOutput(buf)
 

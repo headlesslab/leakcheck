@@ -39,7 +39,7 @@ func TestGetElided(t *testing.T) {
 		leakcheck.GetStack = old
 	}()
 
-	leakcheck.GetStack = func(all bool) string {
+	leakcheck.GetStack = func(_ bool) string {
 		return `goroutine 117 [runnable]:
 reflect.resolveTypeOff(0x7cd5a0, 0x45f40, 0x7bef40)
 	D:/Go16/src/runtime/runtime1.go:504 +0x3a
