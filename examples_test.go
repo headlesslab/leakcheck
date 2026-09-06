@@ -1,4 +1,4 @@
-package gotrace_test
+package leakcheck_test
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ysmood/gotrace"
+	"github.com/headlesslab/leakcheck"
 )
 
 func TestExample(t *testing.T) {
@@ -17,7 +17,7 @@ func TestExample(t *testing.T) {
 	t.Parallel()
 
 	// Make sure no leak after the test
-	gotrace.CheckLeak(t, 0)
+	leakcheck.CheckLeak(t, 0)
 
 	go func() {
 		time.Sleep(100 * time.Millisecond)
@@ -25,7 +25,7 @@ func TestExample(t *testing.T) {
 }
 
 func ExampleGet() {
-	list := gotrace.Get(true)
+	list := leakcheck.Get(true)
 
 	fmt.Println("id of current:", list[0].GoroutineID)
 	fmt.Println("caller of current:", list[0].Stacks[2].Func)
@@ -33,18 +33,18 @@ func ExampleGet() {
 	// Output:
 	//
 	// id of current: 1
-	// caller of current: github.com/ysmood/gotrace_test.ExampleGet
+	// caller of current: github.com/headlesslab/leakcheck_test.ExampleGet
 }
 
 func ExampleIgnoreCurrent() {
-	ignore := gotrace.IgnoreCurrent()
+	ignore := leakcheck.IgnoreCurrent()
 
 	go func() {
 		time.Sleep(time.Second)
 	}()
 
 	start := time.Now()
-	gotrace.Wait(context.TODO(), ignore)
+	leakcheck.Wait(context.TODO(), ignore)
 	end := time.Since(start)
 
 	if end > time.Second {
@@ -55,15 +55,15 @@ func ExampleIgnoreCurrent() {
 }
 
 func ExampleIgnoreFuncs() {
-	ignoreCurrent := gotrace.IgnoreCurrent()
-	ignore := gotrace.IgnoreFuncs("internal/poll.runtime_pollWait")
+	ignoreCurrent := leakcheck.IgnoreCurrent()
+	ignore := leakcheck.IgnoreFuncs("internal/poll.runtime_pollWait")
 
 	go func() {
 		time.Sleep(time.Second)
 	}()
 
 	start := time.Now()
-	gotrace.Wait(context.TODO(), ignore, ignoreCurrent)
+	leakcheck.Wait(context.TODO(), ignore, ignoreCurrent)
 	end := time.Since(start)
 
 	if end > time.Second {
@@ -74,9 +74,9 @@ func ExampleIgnoreFuncs() {
 }
 
 func ExampleCombineIgnores() {
-	ignore := gotrace.CombineIgnores(
-		gotrace.IgnoreCurrent(),
-		func(t *gotrace.Trace) bool {
+	ignore := leakcheck.CombineIgnores(
+		leakcheck.IgnoreCurrent(),
+		func(t *leakcheck.Trace) bool {
 			return strings.Contains(t.Raw, "ExampleCombineIgnores.func2")
 		},
 	)
@@ -90,7 +90,7 @@ func ExampleCombineIgnores() {
 	}()
 
 	start := time.Now()
-	gotrace.Wait(context.TODO(), ignore)
+	leakcheck.Wait(context.TODO(), ignore)
 	end := time.Since(start)
 
 	if time.Second < end && end < 2*time.Second {
@@ -105,11 +105,11 @@ func ExampleTraces_String() {
 		time.Sleep(time.Second)
 	}()
 
-	traces := gotrace.Wait(gotrace.Timeout(0))
+	traces := leakcheck.Wait(leakcheck.Timeout(0))
 
 	str := fmt.Sprintf("%v %v", traces[0], traces)
 
-	fmt.Println(strings.Contains(str, "gotrace_test.ExampleTraces_String"))
+	fmt.Println(strings.Contains(str, "leakcheck_test.ExampleTraces_String"))
 
 	// Output: true
 }
@@ -122,8 +122,8 @@ func ExampleSignal() {
 	}
 
 	go func() {
-		traces := gotrace.Wait(gotrace.Signal())
-		fmt.Println(strings.Contains(traces.String(), "gotrace_test.ExampleSignal"))
+		traces := leakcheck.Wait(leakcheck.Signal())
+		fmt.Println(strings.Contains(traces.String(), "leakcheck_test.ExampleSignal"))
 	}()
 
 	time.Sleep(100 * time.Millisecond)

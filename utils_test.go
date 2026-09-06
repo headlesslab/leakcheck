@@ -1,11 +1,11 @@
-package gotrace_test
+package leakcheck_test
 
 import (
 	"context"
 	"testing"
 	"time"
 
-	"github.com/ysmood/gotrace"
+	"github.com/headlesslab/leakcheck"
 )
 
 func TestMergeStackInfo(t *testing.T) {
@@ -15,7 +15,7 @@ func TestMergeStackInfo(t *testing.T) {
 		<-wait
 	}
 
-	ig := gotrace.IgnoreCurrent()
+	ig := leakcheck.IgnoreCurrent()
 
 	for i := range "..." {
 		go fn(i)
@@ -24,7 +24,7 @@ func TestMergeStackInfo(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond)
 	defer cancel()
 
-	info := gotrace.Wait(ctx, ig).String()
+	info := leakcheck.Wait(ctx, ig).String()
 
 	if info[:3] != "[3]" {
 		t.Fail()
@@ -34,12 +34,12 @@ func TestMergeStackInfo(t *testing.T) {
 }
 
 func TestGetElided(t *testing.T) {
-	old := gotrace.GetStack
+	old := leakcheck.GetStack
 	defer func() {
-		gotrace.GetStack = old
+		leakcheck.GetStack = old
 	}()
 
-	gotrace.GetStack = func(all bool) string {
+	leakcheck.GetStack = func(all bool) string {
 		return `goroutine 117 [runnable]:
 reflect.resolveTypeOff(0x7cd5a0, 0x45f40, 0x7bef40)
 	D:/Go16/src/runtime/runtime1.go:504 +0x3a
@@ -56,16 +56,16 @@ created by main.testFn.func2
 	F:/test/fold/go-rod/debugg.go:518 +0x65e`
 	}
 
-	if gotrace.Get(true)[0].Stacks[5].Func != "main.testFn.func2" {
+	if leakcheck.Get(true)[0].Stacks[5].Func != "main.testFn.func2" {
 		t.Fail()
 	}
 }
 
 func TestIgnoreNonChildrenPanic(t *testing.T) {
-	old := gotrace.TraceAncestorsEnabled
-	gotrace.TraceAncestorsEnabled = false
+	old := leakcheck.TraceAncestorsEnabled
+	leakcheck.TraceAncestorsEnabled = false
 	t.Cleanup(func() {
-		gotrace.TraceAncestorsEnabled = old
+		leakcheck.TraceAncestorsEnabled = old
 	})
 
 	defer func() {
@@ -75,5 +75,5 @@ func TestIgnoreNonChildrenPanic(t *testing.T) {
 		}
 	}()
 
-	gotrace.IgnoreNonChildren()
+	leakcheck.IgnoreNonChildren()
 }

@@ -1,0 +1,8 @@
+leakcheck
+Copyright 2026 headlesslab
+
+This product is derived from gotrace (https://github.com/ysmood/gotrace),
+Copyright 2020 Yad Smood, licensed under the MIT License (see LICENSE).
+leakcheck's initial code is a snapshot of gotrace v0.6.0, tag v0.6.0, commit
+b96e9761f78a1fb3bdc168cf2edd1a7b27d55a43 (2022-04-01), imported without
+git history. Later changes are leakcheck's own.

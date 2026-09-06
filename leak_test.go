@@ -1,4 +1,4 @@
-package gotrace_test
+package leakcheck_test
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ysmood/gotrace"
+	"github.com/headlesslab/leakcheck"
 )
 
 func TestAncestors(t *testing.T) {
@@ -32,9 +32,9 @@ func TestAncestors(t *testing.T) {
 
 		time.Sleep(100 * time.Millisecond)
 
-		id := gotrace.Get(false)[0].GoroutineID
+		id := leakcheck.Get(false)[0].GoroutineID
 
-		ts := gotrace.Get(true).Filter(gotrace.IgnoreNonChildren())
+		ts := leakcheck.Get(true).Filter(leakcheck.IgnoreNonChildren())
 		if len(ts) != 1 && ts[0].GoroutineID != id {
 			t.Fail()
 		}
@@ -42,7 +42,7 @@ func TestAncestors(t *testing.T) {
 		wg.Done()
 	}()
 
-	for _, trace := range gotrace.Get(true) {
+	for _, trace := range leakcheck.Get(true) {
 		if trace.GoroutineID != 1 && !trace.HasParent(1) {
 			t.Fail()
 		}
@@ -62,7 +62,7 @@ func TestCheckLeak(t *testing.T) {
 		<-wait
 	}()
 
-	gotrace.CheckLeak(m, 100*time.Millisecond)
+	leakcheck.CheckLeak(m, 100*time.Millisecond)
 
 	if !m.Failed() {
 		t.Log("m should fail")
@@ -85,7 +85,7 @@ func TestCheckLeakAlreadyFailed(t *testing.T) {
 		<-wait
 	}()
 
-	gotrace.CheckLeak(m, time.Millisecond)
+	leakcheck.CheckLeak(m, time.Millisecond)
 
 	close(wait)
 }
@@ -106,12 +106,12 @@ func (m *mockT) Logf(format string, args ...interface{}) {
 }
 
 func TestCheckMainLeak(t *testing.T) {
-	old := gotrace.Exit
+	old := leakcheck.Exit
 	t.Cleanup(func() {
-		gotrace.Exit = old
+		leakcheck.Exit = old
 		log.SetOutput(os.Stderr)
 	})
-	gotrace.Exit = func(code int) {}
+	leakcheck.Exit = func(code int) {}
 	buf := bytes.NewBuffer(nil)
 	log.SetOutput(buf)
 
@@ -120,7 +120,7 @@ func TestCheckMainLeak(t *testing.T) {
 		<-wait
 	}()
 
-	gotrace.CheckMainLeak(&mockM{}, time.Millisecond)
+	leakcheck.CheckMainLeak(&mockM{}, time.Millisecond)
 
 	if !strings.Contains(buf.String(), "leaking goroutines") {
 		t.Fail()
@@ -130,12 +130,12 @@ func TestCheckMainLeak(t *testing.T) {
 }
 
 func TestCheckMainLeakAlreadyFailed(t *testing.T) {
-	old := gotrace.Exit
+	old := leakcheck.Exit
 	t.Cleanup(func() {
-		gotrace.Exit = old
+		leakcheck.Exit = old
 		log.SetOutput(os.Stderr)
 	})
-	gotrace.Exit = func(code int) {}
+	leakcheck.Exit = func(code int) {}
 	buf := bytes.NewBuffer(nil)
 	log.SetOutput(buf)
 
@@ -144,7 +144,7 @@ func TestCheckMainLeakAlreadyFailed(t *testing.T) {
 		<-wait
 	}()
 
-	gotrace.CheckMainLeak(&mockM{code: 1}, time.Millisecond)
+	leakcheck.CheckMainLeak(&mockM{code: 1}, time.Millisecond)
 
 	t.Log(buf.String())
 

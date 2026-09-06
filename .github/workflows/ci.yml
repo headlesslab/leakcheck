@@ -1,0 +1,20 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  go:
+    uses: headlesslab/.github/.github/workflows/go.yml@91b72ab0bea67e8d7357818e94326394d011bb02 # main
+    with:
+      coverage-threshold: 91.7
+      godebug: tracebackancestors=1000

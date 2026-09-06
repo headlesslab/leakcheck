@@ -1,3 +1,3 @@
-module github.com/ysmood/gotrace
+module github.com/headlesslab/leakcheck
 
-go 1.15
+go 1.21

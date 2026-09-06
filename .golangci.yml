@@ -1,16 +1,28 @@
-run:
-  skip-dirs-use-default: false
-
+# gotrace v0.6.0's .golangci.yml migrated to the v2 schema with
+# `golangci-lint migrate` at v2.13.2, as the headlesslab default configuration
+# was. The reusable workflow prefers this file to the default because the
+# imported code is kept verbatim; tightening the rules is a change of its own.
+version: "2"
 linters:
   enable:
-    - gofmt
-    - revive
     - gocyclo
     - misspell
-
-linters-settings:
-  gocyclo:
-    min-complexity: 15
-
-issues:
-  exclude-use-default: false
+    - revive
+  settings:
+    gocyclo:
+      min-complexity: 15
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

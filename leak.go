@@ -1,4 +1,4 @@
-package gotrace
+package leakcheck
 
 import (
 	"context"
@@ -60,7 +60,7 @@ func CheckMainLeak(m M, timeout time.Duration, ignores ...Ignore) {
 }
 
 // CheckLeak reports error if the test is leaking goroutine.
-// Default timeout is 3s. Default ignore is gotrace.IgnoreNonChildren() .
+// Default timeout is 3s. Default ignore is leakcheck.IgnoreNonChildren() .
 func CheckLeak(t T, timeout time.Duration, ignores ...Ignore) {
 	t.Helper()
 
