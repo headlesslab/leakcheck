@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   go:
-    uses: headlesslab/.github/.github/workflows/go.yml@91b72ab0bea67e8d7357818e94326394d011bb02 # main
+    uses: headlesslab/.github/.github/workflows/go.yml@0d29bb8c9b1426159c03ae4a583487083a3462d0 # main
     with:
       coverage-threshold: 100
       godebug: tracebackancestors=1000
